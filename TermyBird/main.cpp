@@ -12,7 +12,7 @@
 #include <LibGfx/SystemTheme.h>
 #include <LibMain/Main.h>
 #include <LibURL/Parser.h>
-#include <LibWeb/DevicePixelUnits.h>
+#include <LibWeb/PixelUnits.h>
 #include <LibWebView/BrowserProcess.h>
 #include <LibWebView/HeadlessWebView.h>
 #include <LibWebView/Utilities.h>
