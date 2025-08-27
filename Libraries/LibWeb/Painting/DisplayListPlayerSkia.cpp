@@ -531,7 +531,7 @@ void DisplayListPlayerSkia::paint_text_shadow(PaintTextShadow const& command)
 void DisplayListPlayerSkia::fill_rect_with_rounded_corners(FillRectWithRoundedCorners const& command)
 {
     // TROLLING MODE: Print display command instead of rendering!
-    printf("🎨 DISPLAY COMMAND: FillRectWithRoundedCorners - rect=(%d,%d,%dx%d), color=rgba(%d,%d,%d,%d), radii=(%.1f,%.1f,%.1f,%.1f)\n",
+    printf("🎨 DISPLAY COMMAND: FillRectWithRoundedCorners - rect=(%d,%d,%dx%d), color=rgba(%d,%d,%d,%d), radii=(%d,%d,%d,%d)\n",
            command.rect.x(),
            command.rect.y(),
            command.rect.width(),
@@ -656,7 +656,7 @@ void DisplayListPlayerSkia::stroke_path(StrokePath const& command)
 void DisplayListPlayerSkia::draw_ellipse(DrawEllipse const& command)
 {
     // TROLLING MODE: Print display command instead of rendering!
-    printf("🎨 DISPLAY COMMAND: DrawEllipse - rect=(%d,%d,%dx%d), color=rgba(%d,%d,%d,%d), thickness=%.1f\n",
+    printf("🎨 DISPLAY COMMAND: DrawEllipse - rect=(%d,%d,%dx%d), color=rgba(%d,%d,%d,%d), thickness=%d\n",
            command.rect.x(),
            command.rect.y(),
            command.rect.width(),
@@ -689,7 +689,7 @@ void DisplayListPlayerSkia::fill_ellipse(FillEllipse const& command)
 void DisplayListPlayerSkia::draw_line(DrawLine const& command)
 {
     // TROLLING MODE: Print display command instead of rendering!
-    printf("🎨 DISPLAY COMMAND: DrawLine - from=(%d,%d) to=(%d,%d), thickness=%.1f, color=rgba(%d,%d,%d,%d), style=%s\n",
+    printf("🎨 DISPLAY COMMAND: DrawLine - from=(%d,%d) to=(%d,%d), thickness=%d, color=rgba(%d,%d,%d,%d), style=%s\n",
            command.from.x(),
            command.from.y(),
            command.to.x(),
