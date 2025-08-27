@@ -2475,8 +2475,10 @@ Messages::WebDriverClient::SendAlertTextResponse WebDriverConnection::send_alert
     switch (current_browsing_context().page().pending_dialog()) {
     // -> alert
     // -> confirm
+    // -> beforeunload
     case Web::Page::PendingDialog::Alert:
     case Web::Page::PendingDialog::Confirm:
+    case Web::Page::PendingDialog::BeforeUnload:
         // Return error with error code element not interactable.
         return Web::WebDriver::Error::from_code(Web::WebDriver::ErrorCode::ElementNotInteractable, "Only prompt dialogs may receive text"sv);
 
@@ -2692,10 +2694,12 @@ void WebDriverConnection::handle_any_user_prompts(Function<void()> on_dialog_clo
     // 3. If the current user prompt is an alert dialog, set type to "alert". Otherwise, if the current user prompt is a
     //    beforeunload dialog, set type to "beforeUnload". Otherwise, if the current user prompt is a confirm dialog,
     //    set type to "confirm". Otherwise, if the current user prompt is a prompt dialog, set type to "prompt".
-    // FIXME: Handle beforeunload dialogs when they are implemented.
     switch (page.pending_dialog()) {
     case Web::Page::PendingDialog::Alert:
         type = Web::WebDriver::PromptType::Alert;
+        break;
+    case Web::Page::PendingDialog::BeforeUnload:
+        type = Web::WebDriver::PromptType::BeforeUnload;
         break;
     case Web::Page::PendingDialog::Confirm:
         type = Web::WebDriver::PromptType::Confirm;

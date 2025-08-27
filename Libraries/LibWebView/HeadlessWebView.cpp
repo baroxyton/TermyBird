@@ -116,6 +116,9 @@ HeadlessWebView::HeadlessWebView(Core::AnonymousBuffer theme, Web::DevicePixelSi
         case Web::Page::PendingDialog::Prompt:
             prompt_closed(move(m_pending_prompt_text));
             break;
+        case Web::Page::PendingDialog::BeforeUnload:
+            confirm_closed(true);
+            break;
         }
 
         m_pending_dialog = Web::Page::PendingDialog::None;
@@ -134,6 +137,9 @@ HeadlessWebView::HeadlessWebView(Core::AnonymousBuffer theme, Web::DevicePixelSi
             break;
         case Web::Page::PendingDialog::Prompt:
             prompt_closed({});
+            break;
+        case Web::Page::PendingDialog::BeforeUnload:
+            confirm_closed(false);
             break;
         }
 

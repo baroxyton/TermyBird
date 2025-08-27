@@ -149,6 +149,7 @@ public:
         Alert,
         Confirm,
         Prompt,
+        BeforeUnload,
     };
     bool has_pending_dialog() const { return m_pending_dialog != PendingDialog::None; }
     PendingDialog pending_dialog() const { return m_pending_dialog; }
