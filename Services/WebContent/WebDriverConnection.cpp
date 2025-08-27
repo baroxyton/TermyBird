@@ -2475,8 +2475,10 @@ Messages::WebDriverClient::SendAlertTextResponse WebDriverConnection::send_alert
     switch (current_browsing_context().page().pending_dialog()) {
     // -> alert
     // -> confirm
+    // -> beforeunload
     case Web::Page::PendingDialog::Alert:
     case Web::Page::PendingDialog::Confirm:
+    case Web::Page::PendingDialog::BeforeUnload:
         // Return error with error code element not interactable.
         return Web::WebDriver::Error::from_code(Web::WebDriver::ErrorCode::ElementNotInteractable, "Only prompt dialogs may receive text"sv);
 
