@@ -7,6 +7,7 @@
 #pragma once
 
 #include <LibCore/Forward.h>
+#include <LibCore/Timer.h>
 #include <LibGfx/Forward.h>
 #include <LibWeb/Page/Page.h>
 #include <LibWeb/PixelUnits.h>
@@ -40,6 +41,10 @@ protected:
     Optional<Web::Clipboard::SystemClipboardItem> m_clipboard;
 
     Vector<NonnullOwnPtr<SkiaWebView>> m_child_web_views;
+
+    // Paint refresh timer to keep the event loop active and rendering continuously
+    RefPtr<Core::Timer> m_paint_refresh_timer;
+    double m_maximum_frames_per_second { 60.0 };
 };
 
 }

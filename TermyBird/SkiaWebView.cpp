@@ -5,6 +5,8 @@
  */
 
 #include "SkiaWebView.h"
+#include <LibCore/Timer.h>
+#include <LibWeb/HTML/EventLoop/EventLoop.h>
 
 namespace TermyBird {
 
@@ -174,6 +176,18 @@ SkiaWebView::SkiaWebView(Core::AnonymousBuffer theme, Web::DevicePixelSize viewp
             items.append(m_clipboard.value());
         retrieved_clipboard_entries(request_id, items);
     };
+
+    // Set up paint refresh timer to keep the event loop active and rendering continuously
+    // FIXME: This removes the decimal part, so the refresh interval will actually be higher than the maximum FPS.
+    //        For example, 60 FPS = 1000ms / 60 = 16.6666...ms, but it will become 16ms, making the interval equivalent
+    //        to 62.5 FPS.
+    int refresh_interval = static_cast<int>(1000.0 / m_maximum_frames_per_second);
+
+    m_paint_refresh_timer = Core::Timer::create_repeating(refresh_interval, [] {
+        Web::HTML::main_thread_event_loop().queue_task_to_update_the_rendering();
+    });
+
+    m_paint_refresh_timer->start();
 }
 
 void SkiaWebView::initialize_client(CreateNewClient create_new_client)
