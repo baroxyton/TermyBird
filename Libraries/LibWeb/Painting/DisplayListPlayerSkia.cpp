@@ -75,9 +75,12 @@ static SkMatrix to_skia_matrix(Gfx::AffineTransform const& affine_transform)
 
 void DisplayListPlayerSkia::flush()
 {
-    if (m_context)
-        m_context->flush_and_submit(&surface().sk_surface());
-    surface().flush();
+    // TROLLING MODE: Print completion message instead of actual rendering!
+    printf("🎨 TROLLING FLUSH: All display commands sent to terminal instead of Skia rendering! 😈\n");
+    
+    // Skip the actual Skia context flush and submit - that's where the real rendering would happen!
+    // Original code: if (m_context) m_context->flush_and_submit(&surface().sk_surface());
+    // Original code: surface().flush();
 }
 
 void DisplayListPlayerSkia::draw_glyph_run(DrawGlyphRun const& command)
@@ -652,14 +655,19 @@ void DisplayListPlayerSkia::stroke_path(StrokePath const& command)
 
 void DisplayListPlayerSkia::draw_ellipse(DrawEllipse const& command)
 {
-    auto const& rect = command.rect;
-    auto& canvas = surface().canvas();
-    SkPaint paint;
-    paint.setAntiAlias(true);
-    paint.setStyle(SkPaint::kStroke_Style);
-    paint.setStrokeWidth(command.thickness);
-    paint.setColor(to_skia_color(command.color));
-    canvas.drawOval(to_skia_rect(rect), paint);
+    // TROLLING MODE: Print display command instead of rendering!
+    printf("🎨 DISPLAY COMMAND: DrawEllipse - rect=(%d,%d,%dx%d), color=rgba(%d,%d,%d,%d), thickness=%.1f\n",
+           command.rect.x(),
+           command.rect.y(),
+           command.rect.width(),
+           command.rect.height(),
+           command.color.red(),
+           command.color.green(),
+           command.color.blue(),
+           command.color.alpha(),
+           command.thickness);
+    
+    // Skip the ellipse outline drawing!
 }
 
 void DisplayListPlayerSkia::fill_ellipse(FillEllipse const& command)
@@ -715,14 +723,18 @@ void DisplayListPlayerSkia::apply_backdrop_filter(ApplyBackdropFilter const& com
 
 void DisplayListPlayerSkia::draw_rect(DrawRect const& command)
 {
-    auto const& rect = command.rect;
-    auto& canvas = surface().canvas();
-    SkPaint paint;
-    paint.setAntiAlias(true);
-    paint.setStyle(SkPaint::kStroke_Style);
-    paint.setStrokeWidth(1);
-    paint.setColor(to_skia_color(command.color));
-    canvas.drawRect(to_skia_rect(rect), paint);
+    // TROLLING MODE: Print display command instead of rendering!
+    printf("🎨 DISPLAY COMMAND: DrawRect - rect=(%d,%d,%dx%d), color=rgba(%d,%d,%d,%d), stroke_width=1\n",
+           command.rect.x(),
+           command.rect.y(),
+           command.rect.width(),
+           command.rect.height(),
+           command.color.red(),
+           command.color.green(),
+           command.color.blue(),
+           command.color.alpha());
+    
+    // Skip the rectangle outline drawing!
 }
 
 void DisplayListPlayerSkia::paint_radial_gradient(PaintRadialGradient const& command)
@@ -840,34 +852,26 @@ void DisplayListPlayerSkia::paint_nested_display_list(PaintNestedDisplayList con
 
 void DisplayListPlayerSkia::paint_scrollbar(PaintScrollBar const& command)
 {
-    auto gutter_rect = to_skia_rect(command.gutter_rect);
-
-    auto thumb_rect = to_skia_rect(command.thumb_rect);
-    auto radius = thumb_rect.width() / 2;
-    auto thumb_rrect = SkRRect::MakeRectXY(thumb_rect, radius, radius);
-
-    auto& canvas = surface().canvas();
-
-    auto gutter_fill_color = command.track_color;
-    SkPaint gutter_fill_paint;
-    gutter_fill_paint.setColor(to_skia_color(gutter_fill_color));
-    canvas.drawRect(gutter_rect, gutter_fill_paint);
-
-    auto thumb_fill_color = command.thumb_color;
-    if (command.gutter_rect.is_empty() && thumb_fill_color == CSS::InitialValues::scrollbar_color().thumb_color)
-        thumb_fill_color = thumb_fill_color.with_alpha(128);
-
-    SkPaint thumb_fill_paint;
-    thumb_fill_paint.setColor(to_skia_color(thumb_fill_color));
-    canvas.drawRRect(thumb_rrect, thumb_fill_paint);
-
-    auto stroke_color = thumb_fill_color.lightened();
-    SkPaint stroke_paint;
-    stroke_paint.setStroke(true);
-    stroke_paint.setStrokeWidth(1);
-    stroke_paint.setAntiAlias(true);
-    stroke_paint.setColor(to_skia_color(stroke_color));
-    canvas.drawRRect(thumb_rrect, stroke_paint);
+    // TROLLING MODE: Print display command instead of rendering!
+    printf("🎨 DISPLAY COMMAND: PaintScrollBar - gutter=(%d,%d,%dx%d), thumb=(%d,%d,%dx%d), track_color=rgba(%d,%d,%d,%d), thumb_color=rgba(%d,%d,%d,%d)\n",
+           command.gutter_rect.x(),
+           command.gutter_rect.y(),
+           command.gutter_rect.width(),
+           command.gutter_rect.height(),
+           command.thumb_rect.x(),
+           command.thumb_rect.y(),
+           command.thumb_rect.width(),
+           command.thumb_rect.height(),
+           command.track_color.red(),
+           command.track_color.green(),
+           command.track_color.blue(),
+           command.track_color.alpha(),
+           command.thumb_color.red(),
+           command.thumb_color.green(),
+           command.thumb_color.blue(),
+           command.thumb_color.alpha());
+    
+    // Skip the scrollbar drawing!
 }
 
 void DisplayListPlayerSkia::apply_opacity(ApplyOpacity const& command)
