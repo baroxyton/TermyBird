@@ -159,6 +159,16 @@ def main():
             os.environ["UBSAN_OPTIONS"] = os.environ.get(
                 "UBSAN_OPTIONS", "print_stacktrace=1:print_summary=1:halt_on_error=1"
             )
+        
+        # Special handling for termybird - check if executable already exists
+        if args.target == "termybird":
+            build_dir = Path("Build") / "release"
+            termybird_path = build_dir / "bin" / "termybird"
+            if termybird_path.exists():
+                print(f"Found existing termybird executable at {termybird_path}")
+                run_main(platform.host_system, build_dir, args.target, args.args)
+                return
+            
         build_dir = configure_main(platform, args.preset, args.cc, args.cxx)
         build_main(build_dir, args.jobs, args.target)
         run_main(platform.host_system, build_dir, args.target, args.args)
@@ -372,6 +382,7 @@ def run_main(host_system: HostSystem, build_dir: Path, target: str, args: list[s
         "WebContent",
         "WebDriver",
         "WebWorker",
+        "termybird",
     ):
         run_args.append(str(build_dir.joinpath("bin", "Ladybird.app", "Contents", "MacOS", target)))
     else:
