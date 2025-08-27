@@ -1,5 +1,6 @@
 set(SOURCES
     main.cpp
+    SkiaWebView.cpp
 )
 
 add_executable(termybird ${SOURCES})
