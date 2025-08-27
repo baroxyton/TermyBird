@@ -138,6 +138,8 @@ def main():
     if "target" in args:
         if args.target == "ladybird":
             args.target = "Ladybird"
+        if args.target == "termybird":
+            args.target = "TermyBird"
         if not args.target and args.command not in ("build", "rebuild"):
             args.target = "Ladybird"
 
@@ -369,6 +371,7 @@ def run_main(host_system: HostSystem, build_dir: Path, target: str, args: list[s
         "ImageDecoder",
         "Ladybird",
         "RequestServer",
+        "TermyBird",
         "WebContent",
         "WebDriver",
         "WebWorker",
