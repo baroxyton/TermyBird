@@ -1,0 +1,6 @@
+Package: vcpkg-get-python-packages
+Version: 2025-04-05
+Architecture: x64-linux
+Multi-Arch: same
+Abi: ce21727d86e7c1a1725f9c41d173103f01d198b4e4e1195de4a93fab466f5ccc
+Status: install ok installed

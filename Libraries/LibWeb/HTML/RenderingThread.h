@@ -12,12 +12,13 @@
 #include <LibThreading/ConditionVariable.h>
 #include <LibThreading/Mutex.h>
 #include <LibThreading/Thread.h>
+#include <LibWeb/Export.h>
 #include <LibWeb/Forward.h>
 #include <LibWeb/Page/Page.h>
 
 namespace Web::HTML {
 
-class RenderingThread {
+class WEB_API RenderingThread {
     AK_MAKE_NONCOPYABLE(RenderingThread);
     AK_MAKE_NONMOVABLE(RenderingThread);
 
