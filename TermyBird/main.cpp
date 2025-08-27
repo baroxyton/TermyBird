@@ -4,112 +4,88 @@
  * SPDX-License-Identifier: BSD-2-Clause
  */
 
-#include <AK/String.h>
-#include <LibCore/ArgsParser.h>
-#include <LibCore/EventLoop.h>
-#include <LibCore/Timer.h>
-#include <LibMain/Main.h>
-#include <stdio.h>
+#include <iostream>
+#include <string>
+#include <memory>
 
-class FakeSkiaRenderingSurface : public RefCounted<FakeSkiaRenderingSurface> {
+class FakeSkiaRenderingSurface {
 public:
-    static NonnullRefPtr<FakeSkiaRenderingSurface> create(int width, int height)
-    {
-        return adopt_ref(*new FakeSkiaRenderingSurface(width, height));
+    FakeSkiaRenderingSurface(int width, int height) : m_width(width), m_height(height) {
+        std::cout << "🎯 TERMYBIRD TROLLING: Fake Skia rendering surface constructed!" << std::endl;
     }
 
-    void render_url(String const& url)
-    {
-        printf("🌐 TERMYBIRD TROLLING: Pretending to render URL: %s\n", url.characters());
-        printf("📱 TERMYBIRD TROLLING: Creating fake Skia rendering surface of size %dx%d\n", 
-               m_width, m_height);
-        printf("🎨 TERMYBIRD TROLLING: Using Skia rendering backend... NOT!\n");
-        printf("🔥 TERMYBIRD TROLLING: Actually doing nothing but printing this message!\n");
+    void render_url(const std::string& url) {
+        std::cout << "🌐 TERMYBIRD TROLLING: Pretending to render URL: " << url << std::endl;
+        std::cout << "📱 TERMYBIRD TROLLING: Creating fake Skia rendering surface of size " 
+                  << m_width << "x" << m_height << std::endl;
+        std::cout << "🎨 TERMYBIRD TROLLING: Using Skia rendering backend... NOT!" << std::endl;
+        std::cout << "🔥 TERMYBIRD TROLLING: Actually doing nothing but printing this message!" << std::endl;
         
-        // Simulate some Skia "rendering" operations
+        // Simulate Skia operations matching the existing trolling mode from DisplayListPlayerSkia.cpp
         simulate_skia_operations();
         
-        printf("✅ TERMYBIRD TROLLING: Fake Skia rendering complete! (No actual pixels were rendered)\n");
+        std::cout << "✅ TERMYBIRD TROLLING: Fake Skia rendering complete! (No actual pixels were rendered)" << std::endl;
     }
 
-    void simulate_skia_operations()
-    {
+    void simulate_skia_operations() {
         // Simulate typical Skia operations that would happen during web page rendering
-        printf("⏳ TERMYBIRD TROLLING: Fake Skia canvas creation...\n");
-        printf("🎨 DISPLAY COMMAND: FillRect - color=rgba(255,255,255,255), rect=(0,0,%dx%d) [background]\n", m_width, m_height);
-        printf("🎨 DISPLAY COMMAND: DrawGlyphRun - text='Google Search', scale=1.0, color=rgba(0,0,0,255)\n");
-        printf("🎨 DISPLAY COMMAND: FillRect - color=rgba(66,133,244,255), rect=(350,280,120x40) [search button]\n");
-        printf("🎨 DISPLAY COMMAND: DrawPath - color=rgba(234,67,53,255) [Google logo path 1]\n");
-        printf("🎨 DISPLAY COMMAND: DrawPath - color=rgba(251,188,5,255) [Google logo path 2]\n");
-        printf("🎨 DISPLAY COMMAND: DrawPath - color=rgba(52,168,83,255) [Google logo path 3]\n");
-        printf("🎨 DISPLAY COMMAND: DrawPath - color=rgba(66,133,244,255) [Google logo path 4]\n");
-        printf("🎨 TROLLING FLUSH: All display commands sent to terminal instead of Skia rendering! 😈\n");
+        // These match the patterns used in Libraries/LibWeb/Painting/DisplayListPlayerSkia.cpp
+        std::cout << "⏳ TERMYBIRD TROLLING: Fake Skia canvas creation..." << std::endl;
+        std::cout << "🎨 DISPLAY COMMAND: FillRect - color=rgba(255,255,255,255), rect=(0,0," 
+                  << m_width << "x" << m_height << ") [background]" << std::endl;
+        std::cout << "🎨 DISPLAY COMMAND: DrawGlyphRun - text='Google Search', scale=1.0, color=rgba(0,0,0,255)" << std::endl;
+        std::cout << "🎨 DISPLAY COMMAND: FillRect - color=rgba(66,133,244,255), rect=(350,280,120x40) [search button]" << std::endl;
+        std::cout << "🎨 DISPLAY COMMAND: DrawPath - color=rgba(234,67,53,255) [Google logo path 1]" << std::endl;
+        std::cout << "🎨 DISPLAY COMMAND: DrawPath - color=rgba(251,188,5,255) [Google logo path 2]" << std::endl;
+        std::cout << "🎨 DISPLAY COMMAND: DrawPath - color=rgba(52,168,83,255) [Google logo path 3]" << std::endl;
+        std::cout << "🎨 DISPLAY COMMAND: DrawPath - color=rgba(66,133,244,255) [Google logo path 4]" << std::endl;
+        std::cout << "🎨 TROLLING FLUSH: All display commands sent to terminal instead of Skia rendering! 😈" << std::endl;
     }
-
-    int width() const { return m_width; }
-    int height() const { return m_height; }
 
 private:
-    explicit FakeSkiaRenderingSurface(int width, int height)
-        : m_width(width), m_height(height)
-    {
-        printf("🎯 TERMYBIRD TROLLING: Fake Skia rendering surface constructed!\n");
-    }
-
-    int m_width;
-    int m_height;
+    int m_width, m_height;
 };
 
 class TermyBirdWebClient {
 public:
-    TermyBirdWebClient()
-    {
-        printf("🚀 TERMYBIRD: Starting web client with fake Skia rendering surface!\n");
-        m_surface = FakeSkiaRenderingSurface::create(1024, 768);
+    TermyBirdWebClient() {
+        std::cout << "🚀 TERMYBIRD: Starting web client with fake Skia rendering surface!" << std::endl;
+        m_surface = std::make_unique<FakeSkiaRenderingSurface>(1024, 768);
     }
 
-    void navigate_to_google()
-    {
-        String google_url = "https://google.com"sv;
-        printf("🔍 TERMYBIRD: Navigating to Google.com...\n");
-        printf("🌐 TERMYBIRD: Initiating fake HTTP request to Google...\n");
-        printf("📄 TERMYBIRD TROLLING: Pretending to parse HTML content...\n");
-        printf("🎨 TERMYBIRD: Starting fake Skia rendering process...\n");
+    void navigate_to_google() {
+        std::string google_url = "https://google.com";
+        std::cout << "🔍 TERMYBIRD: Navigating to Google.com..." << std::endl;
+        std::cout << "🌐 TERMYBIRD: Initiating fake HTTP request to Google..." << std::endl;
+        std::cout << "📄 TERMYBIRD TROLLING: Pretending to parse HTML content..." << std::endl;
+        std::cout << "🎨 TERMYBIRD: Starting fake Skia rendering process..." << std::endl;
         m_surface->render_url(google_url);
     }
 
-    void run()
-    {
+    void run() {
         navigate_to_google();
-        
-        // Keep the event loop running for a bit to simulate a real browser
-        auto timer = Core::Timer::create();
-        timer->set_single_shot(true);
-        timer->set_interval(3000); // 3 seconds
-        timer->on_timeout = [this]() {
-            printf("🎪 TERMYBIRD TROLLING: Browser session complete! Exiting fake browser.\n");
-            printf("📊 TERMYBIRD: Rendered 0 actual pixels, printed %d trolling messages! 🎭\n", 15);
-            Core::EventLoop::current().quit(0);
-        };
-        timer->start();
+        std::cout << "🎪 TERMYBIRD TROLLING: Browser session complete! Exiting fake browser." << std::endl;
+        std::cout << "📊 TERMYBIRD: Rendered 0 actual pixels, printed " << 15 << " trolling messages! 🎭" << std::endl;
     }
 
 private:
-    NonnullRefPtr<FakeSkiaRenderingSurface> m_surface;
+    std::unique_ptr<FakeSkiaRenderingSurface> m_surface;
 };
 
-ErrorOr<int> serenity_main(Main::Arguments arguments)
-{
-    Core::EventLoop event_loop;
+// Compatible with both serenity_main and regular main function signatures
+int main() {
+    std::cout << "🦅 Welcome to TermyBird - The Trolling Web Browser!" << std::endl;
+    std::cout << "📋 This is a fake web client that pretends to use Skia rendering." << std::endl;
+    std::cout << "🎭 All rendering is fake and will use trolling mode prints!" << std::endl;
+    std::cout << "🔧 Integrates with existing Ladybird Skia trolling infrastructure." << std::endl;
+    std::cout << std::endl;
 
-    printf("🦅 Welcome to TermyBird - The Trolling Web Browser!\n");
-    printf("📋 This is a fake web client that pretends to use Skia rendering.\n");
-    printf("🎭 All rendering is fake and will use trolling mode prints!\n");
-    printf("🔧 Integrates with existing Ladybird Skia trolling infrastructure.\n");
-    printf("\n");
-
-    auto client = make<TermyBirdWebClient>();
+    auto client = std::make_unique<TermyBirdWebClient>();
     client->run();
 
-    return event_loop.exec();
+    return 0;
+}
+
+int serenity_main(int argc, char** argv) {
+    return main();
 }
