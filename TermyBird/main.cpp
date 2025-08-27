@@ -17,7 +17,7 @@
 #include <LibWebView/HeadlessWebView.h>
 #include <LibWebView/Utilities.h>
 
-ErrorOr<int> ladybird_main(Main::Arguments arguments)
+ErrorOr<int> ladybird_main([[maybe_unused]] Main::Arguments arguments)
 {
     // Initialize platform and browser process
     WebView::platform_init();
