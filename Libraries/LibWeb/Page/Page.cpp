@@ -364,6 +364,7 @@ void Page::dismiss_dialog(GC::Ref<GC::Function<void()>> on_dialog_closed)
         break;
     case PendingDialog::Confirm:
     case PendingDialog::Prompt:
+    case PendingDialog::BeforeUnload:
         m_client->page_did_request_dismiss_dialog();
         break;
     }
@@ -379,6 +380,7 @@ void Page::accept_dialog(GC::Ref<GC::Function<void()>> on_dialog_closed)
     case PendingDialog::Alert:
     case PendingDialog::Confirm:
     case PendingDialog::Prompt:
+    case PendingDialog::BeforeUnload:
         m_client->page_did_request_accept_dialog();
         break;
     }

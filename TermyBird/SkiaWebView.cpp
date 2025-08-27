@@ -164,8 +164,10 @@ SkiaWebView::SkiaWebView(Core::AnonymousBuffer theme, Web::DevicePixelSize viewp
     on_insert_clipboard_entry = [this](auto const& data, auto const& mime_type) {
         // Store clipboard data in our internal clipboard
         Web::Clipboard::SystemClipboardItem item;
-        item.mime_type = mime_type;
-        item.data = data;
+        Web::Clipboard::SystemClipboardRepresentation representation;
+        representation.data = data;
+        representation.mime_type = mime_type;
+        item.system_clipboard_representations.append(move(representation));
         m_clipboard = move(item);
     };
 
