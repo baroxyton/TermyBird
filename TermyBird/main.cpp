@@ -11,6 +11,9 @@
 #include <LibGfx/SystemTheme.h>
 #include <LibMain/Main.h>
 #include <LibURL/Parser.h>
+#include <LibWeb/HTML/RenderingThread.h>
+#include <LibWeb/Page/Page.h>
+#include <LibWeb/Painting/DisplayListPlayerSkia.h>
 #include <LibWeb/PixelUnits.h>
 #include <LibWebView/BrowserProcess.h>
 #include <LibWebView/Utilities.h>
@@ -62,7 +65,21 @@ ErrorOr<int> ladybird_main([[maybe_unused]] Main::Arguments arguments)
     // Navigate to Google
     web_view->load(url.value());
 
-    // Run the event loop indefinitely - the program runs as long as the web client is running
+    // Set up Skia rendering thread BEFORE entering event loop
+    // This is what keeps the process alive - mirroring Qt's approach
+    printf("🎨 Setting up Skia rendering thread...\n");
+    
+    // Create DisplayListPlayerSkia (CPU backend for headless operation)
+    auto skia_player = make<Web::Painting::DisplayListPlayerSkia>();
+    
+    // Create a static rendering thread that will outlive this function
+    static Web::HTML::RenderingThread s_rendering_thread;
+    s_rendering_thread.set_skia_player(move(skia_player));
+    s_rendering_thread.start(Web::DisplayListPlayerType::SkiaCPU);
+    
+    printf("✅ Rendering thread started with Skia CPU backend\n");
+
+    // Run the event loop indefinitely - now the rendering thread keeps it busy
     printf("🔄 Running indefinitely while the web client is active...\n");
     printf("💡 The website is being rendered to a Skia surface stored in memory\n");
     printf("✋ Press Ctrl+C to exit\n");
