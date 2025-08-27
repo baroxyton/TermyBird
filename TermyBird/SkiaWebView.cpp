@@ -161,7 +161,7 @@ SkiaWebView::SkiaWebView(Core::AnonymousBuffer theme, Web::DevicePixelSize viewp
         select_dropdown_closed({});
     };
 
-    on_insert_clipboard_entry = [this](auto const& representation, auto const& presentation_style) {
+    on_insert_clipboard_entry = [this](auto const& representation, auto const& /* presentation_style */) {
         // Store clipboard data in our internal clipboard
         Web::Clipboard::SystemClipboardItem item;
         item.system_clipboard_representations.append(representation);
