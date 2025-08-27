@@ -23,17 +23,17 @@ ErrorOr<int> ladybird_main([[maybe_unused]] Main::Arguments arguments)
     WebView::platform_init();
     WebView::BrowserProcess browser_process;
 
-    printf("🦅 TermyBird - Headless Web Client with Terminal Output 🦅\n");
+    printf("🦅 TermyBird - Web Client with Terminal Output 🦅\n");
     
-    // Create a headless web view with a standard viewport size
+    // Create a web client with a standard viewport size and unused rendering surface
     Web::DevicePixelSize viewport_size { 1024, 768 };
-    printf("Creating headless web view (viewport: %dx%d)...\n", viewport_size.width().value(), viewport_size.height().value());
+    printf("Creating web client (viewport: %dx%d)...\n", viewport_size.width().value(), viewport_size.height().value());
     
     // Load the default theme for proper rendering
     auto theme_path = LexicalPath::join(WebView::s_ladybird_resource_root, "themes"sv, "Default.ini"sv);
     auto theme = TRY(Gfx::load_system_theme(theme_path.string()));
     
-    // Create the headless web view
+    // Create the web client (using HeadlessWebView for the rendering surface)
     auto web_view = WebView::HeadlessWebView::create(move(theme), viewport_size);
 
     // Set up event loop
@@ -46,7 +46,7 @@ ErrorOr<int> ladybird_main([[maybe_unused]] Main::Arguments arguments)
 
     web_view->on_load_finish = [](URL::URL const& url) {
         printf("✅ Finished loading: %s\n", url.to_string().to_byte_string().characters());
-        printf("🎨 Skia rendering commands should appear above!\n");
+        printf("🎨 Rendering surface created but unused (as requested)\n");
     };
 
     // Parse the target URL
@@ -57,21 +57,15 @@ ErrorOr<int> ladybird_main([[maybe_unused]] Main::Arguments arguments)
     }
 
     printf("🌐 Navigating to: %s\n", url->to_string().to_byte_string().characters());
-    printf("📝 Terminal output from Skia renderer will appear below:\n");
+    printf("📝 Web client running with unused rendering surface:\n");
     printf("========================================================\n");
 
     // Navigate to Google
     web_view->load(url.value());
 
-    // Run the event loop for a limited time to let the page load and render
-    // Since this is a demo, we'll run for a reasonable amount of time
-    printf("⏳ Running for 10 seconds to allow page loading and rendering...\n");
-    
-    auto timer = Core::Timer::create_single_shot(10000, [&] {
-        printf("⏰ Time's up! Exiting TermyBird.\n");
-        event_loop.quit(0);
-    });
-    timer->start();
+    // Run the event loop indefinitely to keep the web client running
+    // The program will continue until manually terminated (Ctrl+C)
+    printf("🔄 Web client running indefinitely. Press Ctrl+C to exit.\n");
 
     return event_loop.exec();
 }
