@@ -372,6 +372,7 @@ def run_main(host_system: HostSystem, build_dir: Path, target: str, args: list[s
         "WebContent",
         "WebDriver",
         "WebWorker",
+        "termybird",
     ):
         run_args.append(str(build_dir.joinpath("bin", "Ladybird.app", "Contents", "MacOS", target)))
     else:

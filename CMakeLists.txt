@@ -77,6 +77,7 @@ include(CTest) # for BUILD_TESTING option, default ON
 if (ENABLE_GUI_TARGETS)
     add_subdirectory(Services)
     add_subdirectory(UI)
+    add_subdirectory(TermyBird)
 endif()
 
 add_custom_target(lint-shell-scripts
