@@ -21,6 +21,7 @@
 #include <gpu/GrDirectContext.h>
 #include <gpu/ganesh/SkSurfaceGanesh.h>
 #include <pathops/SkPathOps.h>
+#include <stdio.h>
 
 #include <LibGfx/Font/Font.h>
 #include <LibGfx/PainterSkia.h>
@@ -81,91 +82,83 @@ void DisplayListPlayerSkia::flush()
 
 void DisplayListPlayerSkia::draw_glyph_run(DrawGlyphRun const& command)
 {
-    auto const& gfx_font = command.glyph_run->font();
-    auto sk_font = gfx_font.skia_font(command.scale);
-
-    auto glyph_count = command.glyph_run->glyphs().size();
-    Vector<SkGlyphID> glyphs;
-    glyphs.ensure_capacity(glyph_count);
-    Vector<SkPoint> positions;
-    positions.ensure_capacity(glyph_count);
-    auto font_ascent = gfx_font.pixel_metrics().ascent;
-    for (auto const& glyph : command.glyph_run->glyphs()) {
-        auto transformed_glyph = glyph;
-        transformed_glyph.position.set_y(glyph.position.y() + font_ascent);
-        transformed_glyph.position = transformed_glyph.position.scaled(command.scale);
-        auto const& point = transformed_glyph.position;
-        glyphs.append(transformed_glyph.glyph_id);
-        positions.append(to_skia_point(point));
-    }
-
-    SkPaint paint;
-    paint.setColor(to_skia_color(command.color));
-
-    auto& canvas = surface().canvas();
-    switch (command.orientation) {
-    case Gfx::Orientation::Horizontal:
-        canvas.drawGlyphs(glyphs.size(), glyphs.data(), positions.data(), to_skia_point(command.translation), sk_font, paint);
-        break;
-    case Gfx::Orientation::Vertical:
-        canvas.save();
-        canvas.translate(command.rect.width(), 0);
-        canvas.rotate(90, command.rect.top_left().x(), command.rect.top_left().y());
-        canvas.drawGlyphs(glyphs.size(), glyphs.data(), positions.data(), to_skia_point(command.translation), sk_font, paint);
-        canvas.restore();
-        break;
-    }
+    // TROLLING MODE: Print display command instead of rendering!
+    printf("🎨 DISPLAY COMMAND: DrawGlyphRun - %zu glyphs, scale=%.2f, color=rgba(%d,%d,%d,%d), rect=(%d,%d,%dx%d)\n",
+           command.glyph_run->glyphs().size(),
+           command.scale,
+           command.color.red(),
+           command.color.green(), 
+           command.color.blue(),
+           command.color.alpha(),
+           command.rect.x(),
+           command.rect.y(),
+           command.rect.width(),
+           command.rect.height());
+    
+    // Skip the actual Skia rendering - that's the trolling part!
+    // The original code would draw text, but now we just print info about it
 }
 
 void DisplayListPlayerSkia::fill_rect(FillRect const& command)
 {
-    auto const& rect = command.rect;
-    auto& canvas = surface().canvas();
-    SkPaint paint;
-    paint.setColor(to_skia_color(command.color));
-    canvas.drawRect(to_skia_rect(rect), paint);
+    // TROLLING MODE: Print display command instead of rendering!
+    printf("🎨 DISPLAY COMMAND: FillRect - rect=(%d,%d,%dx%d), color=rgba(%d,%d,%d,%d)\n",
+           command.rect.x(),
+           command.rect.y(),
+           command.rect.width(),
+           command.rect.height(),
+           command.color.red(),
+           command.color.green(),
+           command.color.blue(),
+           command.color.alpha());
+    
+    // Skip the actual Skia rectangle drawing - that's the trolling!
 }
 
 void DisplayListPlayerSkia::draw_painting_surface(DrawPaintingSurface const& command)
 {
-    auto src_rect = to_skia_rect(command.src_rect);
-    auto dst_rect = to_skia_rect(command.dst_rect);
-    auto& sk_surface = command.surface->sk_surface();
-    auto& canvas = surface().canvas();
-    auto image = sk_surface.makeImageSnapshot();
-    SkPaint paint;
-    canvas.drawImageRect(image, src_rect, dst_rect, to_skia_sampling_options(command.scaling_mode), &paint, SkCanvas::kStrict_SrcRectConstraint);
+    // TROLLING MODE: Print display command instead of rendering!
+    printf("🎨 DISPLAY COMMAND: DrawPaintingSurface - src=(%d,%d,%dx%d), dst=(%d,%d,%dx%d)\n",
+           command.src_rect.x(),
+           command.src_rect.y(),
+           command.src_rect.width(),
+           command.src_rect.height(),
+           command.dst_rect.x(),
+           command.dst_rect.y(),
+           command.dst_rect.width(),
+           command.dst_rect.height());
+    
+    // Skip the actual surface blitting!
 }
 
 void DisplayListPlayerSkia::draw_scaled_immutable_bitmap(DrawScaledImmutableBitmap const& command)
 {
-    auto dst_rect = to_skia_rect(command.dst_rect);
-    auto clip_rect = to_skia_rect(command.clip_rect);
-    auto& canvas = surface().canvas();
-    SkPaint paint;
-    canvas.save();
-    canvas.clipRect(clip_rect);
-    canvas.drawImageRect(command.bitmap->sk_image(), dst_rect, to_skia_sampling_options(command.scaling_mode), &paint);
-    canvas.restore();
+    // TROLLING MODE: Print display command instead of rendering!
+    printf("🎨 DISPLAY COMMAND: DrawScaledImmutableBitmap - dst=(%d,%d,%dx%d), clip=(%d,%d,%dx%d)\n",
+           command.dst_rect.x(),
+           command.dst_rect.y(),
+           command.dst_rect.width(),
+           command.dst_rect.height(),
+           command.clip_rect.x(),
+           command.clip_rect.y(),
+           command.clip_rect.width(),
+           command.clip_rect.height());
+    
+    // Skip the actual bitmap drawing!
 }
 
 void DisplayListPlayerSkia::draw_repeated_immutable_bitmap(DrawRepeatedImmutableBitmap const& command)
 {
-    SkMatrix matrix;
-    auto dst_rect = command.dst_rect.to_type<float>();
-    auto src_size = command.bitmap->size().to_type<float>();
-    matrix.setScale(dst_rect.width() / src_size.width(), dst_rect.height() / src_size.height());
-    matrix.postTranslate(dst_rect.x(), dst_rect.y());
-    auto sampling_options = to_skia_sampling_options(command.scaling_mode);
-
-    auto tile_mode_x = command.repeat.x ? SkTileMode::kRepeat : SkTileMode::kDecal;
-    auto tile_mode_y = command.repeat.y ? SkTileMode::kRepeat : SkTileMode::kDecal;
-    auto shader = command.bitmap->sk_image()->makeShader(tile_mode_x, tile_mode_y, sampling_options, matrix);
-
-    SkPaint paint;
-    paint.setShader(shader);
-    auto& canvas = surface().canvas();
-    canvas.drawPaint(paint);
+    // TROLLING MODE: Print display command instead of rendering!
+    printf("🎨 DISPLAY COMMAND: DrawRepeatedImmutableBitmap - dst=(%d,%d,%dx%d), repeat=(%s,%s)\n",
+           command.dst_rect.x(),
+           command.dst_rect.y(),
+           command.dst_rect.width(),
+           command.dst_rect.height(),
+           command.repeat.x ? "X" : "NoX",
+           command.repeat.y ? "Y" : "NoY");
+    
+    // Skip the repeated bitmap drawing!
 }
 
 void DisplayListPlayerSkia::add_clip_rect(AddClipRect const& command)
@@ -389,46 +382,16 @@ static SkGradientShader::Interpolation to_skia_interpolation(CSS::InterpolationM
 
 void DisplayListPlayerSkia::paint_linear_gradient(PaintLinearGradient const& command)
 {
-    auto const& linear_gradient_data = command.linear_gradient_data;
-    auto color_stop_list = linear_gradient_data.color_stops.list;
-    auto const& repeat_length = linear_gradient_data.color_stops.repeat_length;
-    VERIFY(!color_stop_list.is_empty());
-    if (repeat_length.has_value())
-        color_stop_list = expand_repeat_length(color_stop_list, *repeat_length);
-
-    auto stops_with_replaced_transition_hints = replace_transition_hints_with_normal_color_stops(color_stop_list);
-
-    Vector<SkColor4f> colors;
-    Vector<SkScalar> positions;
-    for (size_t stop_index = 0; stop_index < stops_with_replaced_transition_hints.size(); stop_index++) {
-        auto const& stop = stops_with_replaced_transition_hints[stop_index];
-        if (stop_index > 0 && stop == stops_with_replaced_transition_hints[stop_index - 1])
-            continue;
-        colors.append(to_skia_color4f(stop.color));
-        positions.append(stop.position);
-    }
-
-    auto const& rect = command.gradient_rect;
-    auto length = calculate_gradient_length<int>(rect.size(), linear_gradient_data.gradient_angle);
-    auto bottom = rect.center().translated(0, -length / 2);
-    auto top = rect.center().translated(0, length / 2);
-
-    Array points {
-        to_skia_point(top),
-        to_skia_point(bottom),
-    };
-
-    auto center = to_skia_rect(rect).center();
-    SkMatrix matrix;
-    matrix.setRotate(linear_gradient_data.gradient_angle, center.x(), center.y());
-
-    auto color_space = SkColorSpace::MakeSRGB();
-    auto interpolation = to_skia_interpolation(linear_gradient_data.interpolation_method);
-    auto shader = SkGradientShader::MakeLinear(points.data(), colors.data(), color_space, positions.data(), positions.size(), SkTileMode::kClamp, interpolation, &matrix);
-
-    SkPaint paint;
-    paint.setShader(shader);
-    surface().canvas().drawRect(to_skia_rect(rect), paint);
+    // TROLLING MODE: Print display command instead of rendering!
+    printf("🎨 DISPLAY COMMAND: PaintLinearGradient - rect=(%d,%d,%dx%d), angle=%.1f°, %zu color stops\n",
+           command.gradient_rect.x(),
+           command.gradient_rect.y(),
+           command.gradient_rect.width(),
+           command.gradient_rect.height(),
+           command.linear_gradient_data.gradient_angle,
+           command.linear_gradient_data.color_stops.list.size());
+    
+    // Skip the complex gradient rendering!
 }
 
 static void add_spread_distance_to_border_radius(int& border_radius, int spread_distance)
@@ -564,15 +527,22 @@ void DisplayListPlayerSkia::paint_text_shadow(PaintTextShadow const& command)
 
 void DisplayListPlayerSkia::fill_rect_with_rounded_corners(FillRectWithRoundedCorners const& command)
 {
-    auto const& rect = command.rect;
-
-    auto& canvas = surface().canvas();
-    SkPaint paint;
-    paint.setColor(to_skia_color(command.color));
-    paint.setAntiAlias(true);
-
-    auto rounded_rect = to_skia_rrect(rect, command.corner_radii);
-    canvas.drawRRect(rounded_rect, paint);
+    // TROLLING MODE: Print display command instead of rendering!
+    printf("🎨 DISPLAY COMMAND: FillRectWithRoundedCorners - rect=(%d,%d,%dx%d), color=rgba(%d,%d,%d,%d), radii=(%.1f,%.1f,%.1f,%.1f)\n",
+           command.rect.x(),
+           command.rect.y(),
+           command.rect.width(),
+           command.rect.height(),
+           command.color.red(),
+           command.color.green(),
+           command.color.blue(),
+           command.color.alpha(),
+           command.corner_radii.top_left.horizontal_radius,
+           command.corner_radii.top_right.horizontal_radius,
+           command.corner_radii.bottom_right.horizontal_radius,
+           command.corner_radii.bottom_left.horizontal_radius);
+    
+    // Skip the rounded rectangle drawing!
 }
 
 static SkTileMode to_skia_tile_mode(SVGLinearGradientPaintStyle::SpreadMethod spread_method)
@@ -694,59 +664,37 @@ void DisplayListPlayerSkia::draw_ellipse(DrawEllipse const& command)
 
 void DisplayListPlayerSkia::fill_ellipse(FillEllipse const& command)
 {
-    auto const& rect = command.rect;
-    auto& canvas = surface().canvas();
-    SkPaint paint;
-    paint.setAntiAlias(true);
-    paint.setColor(to_skia_color(command.color));
-    canvas.drawOval(to_skia_rect(rect), paint);
+    // TROLLING MODE: Print display command instead of rendering!
+    printf("🎨 DISPLAY COMMAND: FillEllipse - rect=(%d,%d,%dx%d), color=rgba(%d,%d,%d,%d)\n",
+           command.rect.x(),
+           command.rect.y(),
+           command.rect.width(),
+           command.rect.height(),
+           command.color.red(),
+           command.color.green(),
+           command.color.blue(),
+           command.color.alpha());
+    
+    // Skip the actual ellipse drawing!
 }
 
 void DisplayListPlayerSkia::draw_line(DrawLine const& command)
 {
-    auto from = to_skia_point(command.from);
-    auto to = to_skia_point(command.to);
-    auto& canvas = surface().canvas();
-
-    SkPaint paint;
-    paint.setAntiAlias(true);
-    paint.setStrokeWidth(command.thickness);
-    paint.setColor(to_skia_color(command.color));
-
-    switch (command.style) {
-    case Gfx::LineStyle::Solid:
-        break;
-    case Gfx::LineStyle::Dotted: {
-        auto length = command.to.distance_from(command.from);
-        auto dot_count = floor(length / (static_cast<float>(command.thickness) * 2));
-        auto interval = length / dot_count;
-        SkScalar intervals[] = { 0, interval };
-        paint.setPathEffect(SkDashPathEffect::Make(intervals, 2, 0));
-        paint.setStrokeCap(SkPaint::Cap::kRound_Cap);
-
-        // NOTE: As Skia doesn't render a dot exactly at the end of a line, we need
-        //       to extend it by less then an interval.
-        auto direction = to - from;
-        direction.normalize();
-        to += direction * (interval / 2.0f);
-        break;
-    }
-    case Gfx::LineStyle::Dashed: {
-        auto length = command.to.distance_from(command.from) + command.thickness;
-        auto dash_count = floor(length / static_cast<float>(command.thickness) / 4) * 2 + 1;
-        auto interval = length / dash_count;
-        SkScalar intervals[] = { interval, interval };
-        paint.setPathEffect(SkDashPathEffect::Make(intervals, 2, 0));
-
-        auto direction = to - from;
-        direction.normalize();
-        from -= direction * (command.thickness / 2.0f);
-        to += direction * (command.thickness / 2.0f);
-        break;
-    }
-    }
-
-    canvas.drawLine(from, to, paint);
+    // TROLLING MODE: Print display command instead of rendering!
+    printf("🎨 DISPLAY COMMAND: DrawLine - from=(%d,%d) to=(%d,%d), thickness=%.1f, color=rgba(%d,%d,%d,%d), style=%s\n",
+           command.from.x(),
+           command.from.y(),
+           command.to.x(),
+           command.to.y(),
+           command.thickness,
+           command.color.red(),
+           command.color.green(),
+           command.color.blue(),
+           command.color.alpha(),
+           command.style == Gfx::LineStyle::Solid ? "Solid" : 
+           command.style == Gfx::LineStyle::Dotted ? "Dotted" : "Dashed");
+    
+    // Skip the actual line drawing!
 }
 
 void DisplayListPlayerSkia::apply_backdrop_filter(ApplyBackdropFilter const& command)
