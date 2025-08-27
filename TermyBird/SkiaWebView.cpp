@@ -184,7 +184,11 @@ SkiaWebView::SkiaWebView(Core::AnonymousBuffer theme, Web::DevicePixelSize viewp
     int refresh_interval = static_cast<int>(1000.0 / m_maximum_frames_per_second);
 
     m_paint_refresh_timer = Core::Timer::create_repeating(refresh_interval, [] {
-        Web::HTML::main_thread_event_loop().queue_task_to_update_the_rendering();
+        auto& event_loop = Web::HTML::main_thread_event_loop();
+        // Always schedule the event loop to ensure it stays active, even before navigables are created
+        event_loop.schedule();
+        // Also queue rendering tasks if there are navigables available
+        event_loop.queue_task_to_update_the_rendering();
     });
 
     m_paint_refresh_timer->start();
