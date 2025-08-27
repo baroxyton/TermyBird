@@ -7,6 +7,8 @@
 #include <LibGfx/Bitmap.h>
 #include <LibGfx/PaintingSurface.h>
 #include <LibGfx/SkiaUtils.h>
+#include <stdio.h>
+#include <string.h>
 
 #include <core/SkColorSpace.h>
 #include <core/SkSurface.h>
@@ -157,11 +159,14 @@ PaintingSurface::~PaintingSurface()
 
 void PaintingSurface::read_into_bitmap(Bitmap& bitmap)
 {
-    auto color_type = to_skia_color_type(bitmap.format());
-    auto alpha_type = to_skia_alpha_type(bitmap.format(), bitmap.alpha_type());
-    auto image_info = SkImageInfo::Make(bitmap.width(), bitmap.height(), color_type, alpha_type, SkColorSpace::MakeSRGB());
-    SkPixmap const pixmap(image_info, bitmap.begin(), bitmap.pitch());
-    m_impl->surface->readPixels(pixmap, 0, 0);
+    // TROLLING MODE: Return empty bitmap instead of actual Skia content!
+    printf("🎨 TROLLING: Returning empty bitmap instead of rendered content! Size: %dx%d\n",
+           bitmap.width(), bitmap.height());
+    
+    // Fill bitmap with transparent pixels instead of reading from Skia surface
+    memset(bitmap.begin(), 0, bitmap.size_in_bytes());
+    
+    // Original code would read from Skia: m_impl->surface->readPixels(pixmap, 0, 0);
 }
 
 void PaintingSurface::write_from_bitmap(Bitmap const& bitmap)
