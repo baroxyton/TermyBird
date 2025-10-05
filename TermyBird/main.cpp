@@ -26,6 +26,7 @@ ErrorOr<int> ladybird_main([[maybe_unused]] Main::Arguments arguments)
     WebView::BrowserProcess browser_process;
 
     printf("🦅 TermyBird - Web Client with Skia Rendering 🦅\n");
+    fflush(stdout);
     
     // Set up event loop FIRST - needed by timers in SkiaWebView
     Core::EventLoop event_loop;
