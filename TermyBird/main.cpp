@@ -26,6 +26,10 @@ ErrorOr<int> ladybird_main([[maybe_unused]] Main::Arguments arguments)
     WebView::BrowserProcess browser_process;
 
     printf("🦅 TermyBird - Web Client with Skia Rendering 🦅\n");
+    fflush(stdout);
+    
+    // Set up event loop FIRST - needed by timers in SkiaWebView
+    Core::EventLoop event_loop;
     
     // Create a web client with a standard viewport size
     Web::DevicePixelSize viewport_size { 1024, 768 };
@@ -37,9 +41,6 @@ ErrorOr<int> ladybird_main([[maybe_unused]] Main::Arguments arguments)
     
     // Create the Skia web view (NOT headless - it's a real web client that renders to Skia surface)
     auto web_view = TermyBird::SkiaWebView::create(move(theme), viewport_size);
-
-    // Set up event loop
-    Core::EventLoop event_loop;
 
     // Set up callbacks to see when page loads
     web_view->on_load_start = [](URL::URL const& url, bool is_redirect) {
