@@ -8,6 +8,7 @@
 #include <LibCore/AnonymousBuffer.h>
 #include <LibCore/EventLoop.h>
 #include <LibCore/System.h>
+#include <LibCore/Timer.h>
 #include <LibGfx/SystemTheme.h>
 #include <LibMain/Main.h>
 #include <LibURL/Parser.h>
@@ -80,10 +81,17 @@ ErrorOr<int> ladybird_main([[maybe_unused]] Main::Arguments arguments)
     
     printf("✅ Rendering thread started with Skia CPU backend\n");
 
-    // Run the event loop indefinitely - now the rendering thread keeps it busy
-    printf("🔄 Running indefinitely while the web client is active...\n");
+    // Run the event loop for 10 seconds to allow page loading and rendering
+    printf("🔄 Running for 10 seconds to allow page loading and rendering...\n");
     printf("💡 The website is being rendered to a Skia surface stored in memory\n");
-    printf("✋ Press Ctrl+C to exit\n");
+    printf("✋ Press Ctrl+C to exit early\n");
+
+    // Create a timer to keep the event loop alive and exit after 10 seconds
+    auto exit_timer = Core::Timer::create_single_shot(10000, [&event_loop] {
+        printf("\n⏱️  10 seconds elapsed, exiting gracefully...\n");
+        event_loop.quit(0);
+    });
+    exit_timer->start();
 
     return event_loop.exec();
 }

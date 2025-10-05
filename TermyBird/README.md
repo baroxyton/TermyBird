@@ -18,9 +18,11 @@ Compile and run with:
 
 ## Implementation Details
 
-- **main.cpp**: Creates a HeadlessWebView, navigates to Google.com, and runs an event loop with a timer
+- **main.cpp**: Creates a SkiaWebView, navigates to Google.com, and runs an event loop with a timer
+- **SkiaWebView.cpp/h**: Custom web view implementation that uses Skia for rendering with a paint refresh timer
 - **CMakeLists.txt**: Builds the `termybird` executable with necessary library dependencies
 - **Integration**: Added to root CMakeLists.txt as a subdirectory under ENABLE_GUI_TARGETS
+- **Timer**: A 10-second timer keeps the event loop alive to allow page loading and rendering before graceful exit
 
 ## Expected Output
 
